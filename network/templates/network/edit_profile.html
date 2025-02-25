@@ -1,0 +1,46 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+{% load static %}
+<div class="container">
+    <div class="profile-form-container">
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
+        <div class="form-container">
+            <div class="profile-information">
+                <img id="profile-picture" alt="Profile Icon" class="profileIcon">           
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <label class="red-label">Email:</label>
+                <span class="profile-username">{{ user.email }}</span>
+                <br>
+                <label for="id_username" class="red-label">Username:</label>
+                <input class="darkInput" type="text" id="id_username" name="username" value="{{ user.username }}">
+                <br>
+                <label for="id_name" class="red-label">Name:</label>
+                <input class="darkInput" type="text" id="id_name" name="name" value="{{ user.first_name }}">
+                <br>
+                <input class="form-button" type="submit" name="save_profile" value="Save">
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h3>Password Change</h3>
+            <form method="post">
+                {% csrf_token %}
+                <label for="id_password" class="red-label">New Password:</label>
+                <input class="darkInput" type="password" id="id_password" name="password">
+                <br>
+                <label for="id_confirm_password" class="red-label">Confirm Password:</label>
+                <input class="darkInput" type="password" id="id_confirm_password" name="confirm_password">
+                <br>
+                <input class="form-button" type="submit" name="change_password" value="Change Password">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+{% load static %}
+    <div class="profile-container">
+        <div class="profile-information">
+            <div class="profile-header">
+                <img id="profile-picture" alt="Profile Icon" class="profileIcon">
+                {% if user.is_authenticated %}
+                    {% if is_owner %}
+                        <button class="colored-button" id="edit-button">Edit</button>
+                    {% else %}
+                        {% if is_following %}
+                            <button class="colored-button" id="unfollow-button">Unfollow</button>
+                        {% else %}
+                            <button class="colored-button" id="follow-button">Follow</button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="profile-details">
+                <div id="profile-name" class="profile-name"></div>
+                <div id="profile-username" class="profile-username"></div>
+                <div class="profile-stats">
+                    <span id="followers-count" class="stat"></span>
+                    <span id="following-count" class="stat"></span>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="postsContainer">
+            <!-- Posts will be dynamically loaded here using displayPosts function -->
+        </div>
+        <div class="paginationContainer"></div>
+    </div>
+
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <div class="close-button" id="closeCommentModal" data-modal-target="commentModal">&times;</div>
+            <div class="replyingPost">
+                <div class="user-profile-post">
+                    <img src="" alt="" class="profile-picture-small" id="modalProfilePicture">
+                    <div class="divider-line"></div>
+                </div>
+                <div class="post-details">
+                    <span class="reply-username" id="modalUsername"></span>
+                    <span class="reply-date" id="modalDate"></span>
+                    <p class="replying-post-content" id="modalPostContent"></p>
+                    <div class="reply-container" id="modalReplyContainer"></div>
+                </div>
+                
+            </div> 
+            <div class="newCommentContainer">
+                <img src="{{ user.get_profile_picture }}" alt="Profile Icon" class="profile-picture-small">
+                <form class="comment-form" id="modal-comment-form">
+                    <input type="hidden" id="modalPostId" value="">
+                    <textarea class="newCommentForm" id="modalNewComment" placeholder="Add your thoughts" rows="1"></textarea>
+                    <button type="submit" class="colored-button">Reply</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editPostModal" class="modal">
+        <div class="modal-content">
+            <div class="edit-header-modal">
+                <div class="close-button" id="closeEditPostModal" data-modal-target="editPostModal">&times;</div>
+                <button id="deletePostButton" class="delete-post-button">
+                    <img src="{% static 'images/trash-can.svg' %}" alt="Delete" class="delete-post-icon"/>
+                </button>
+            </div>
+            <textarea id="editPostTextarea" class="darkInput" rows="3"></textarea>
+            <div class="edit-modal-footer">
+                <button id="saveEditPostButton" class="colored-button">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deletePostModal" class="modal">
+        <div class="modal-content">
+            <div class="edit-header-modal">
+                <div>Are you sure you want to delete this post??</div>
+            </div>
+            <div class="modal-buttons edit-modal-footer">
+                <button id="confirmDeleteButton" class="confirmation-colored-button">Yes</button>
+                <button id="cancelDeleteButton" class="colored-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="{% static 'js/profile.js' %}"></script>
+    <script type="module" src="{% static 'js/post.js' %}?v={{ STATIC_VERSION }}"></script>
+
+
+{% endblock %}

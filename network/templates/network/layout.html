@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Social Network{% endblock %}</title>
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16' %}">
+        <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+        <script>
+            const threeDotsSvgUrl = "{% static 'images/three-dots.svg' %}";
+        </script>
+        
+        {% block css %}
+
+        {% endblock %}
+    </head>
+    <body>
+
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{% url 'index' %}">Network</a>
+          
+            <div>
+              <ul class="navbar-nav mr-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile_view' user.username %}"><strong>{{ user.username }}</strong></a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    </li>
+                {% else %}
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li> -->
+                {% endif %}
+              </ul>
+            </div>
+          </nav>
+        
+        <div class="body-container">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Django",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "C:/Users/nina8/Documents/CS50/network/project4/manage.py",
+        "args": ["runserver"],
+        "django": true
+      }
+    ]
+  }
