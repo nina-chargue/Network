@@ -410,6 +410,19 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // 7. Format timestamps
+    const timestampElements = document.querySelectorAll('.timestamp');
+    timestampElements.forEach(el => {
+        const date = el.getAttribute('data-date');
+        if (date) {
+            if (el.classList.contains('time-ago')) {
+                el.textContent = formatTimestamp(date);
+            } else if (el.classList.contains('formatted-timestamp')) {
+                el.textContent = formatTimestamp(date);
+            }
+        }
+    });
+
     // 4. Save edited post
     const saveEditButton = document.getElementById("saveEditPostButton");
     if (saveEditButton) {
@@ -431,18 +444,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-    // 7. Format timestamps
-    const timestampElements = document.querySelectorAll('.timestamp');
-    timestampElements.forEach(el => {
-        const date = el.getAttribute('data-date');
-        if (date) {
-            if (el.classList.contains('time-ago')) {
-                el.textContent = formatTimestamp(date);
-            } else if (el.classList.contains('formatted-timestamp')) {
-                el.textContent = formatTimestamp(date);
-            }
-        }
-    });
+
 
     // 8. Comment form submission
     const commentForm = document.getElementById("modal-comment-form");

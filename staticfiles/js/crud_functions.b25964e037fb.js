@@ -74,34 +74,44 @@ export function toggleLike(postId) {
     });
 }
 
-export function addComment(postId) {
-    const commentContent = document.getElementById("modalNewComment").value;
+export function addComment() {
+    const modalPostIdInput = document.getElementById("modalPostId");
 
-    if (commentContent) {
-        fetch(`/api/posts/${postId}/comment`, {
-            method: 'POST',
-            body: JSON.stringify({ comment: commentContent }),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Comment added:', data);
-            document.getElementById("commentModal").style.display = "none";
-            document.getElementById("modalNewComment").value = '';
-            window.location.href = `/post/${postId}/`;
-        })
-        .catch(error => {
-            console.error('Error adding comment:', error);
-            alert("Error adding comment. Please try again.");
-        });
-    } else {
-        alert("Comment content cannot be empty.");
+    if (!modalPostIdInput || !modalPostIdInput.value) {
+        console.error("❌ No post ID found when submitting comment.");
+        alert("Error: Post ID is missing.");
+        return;
     }
+
+    const postId = modalPostIdInput.value.trim();
+    const commentContent = document.getElementById("modalNewComment").value.trim();
+
+    if (!commentContent) {
+        alert("Comment content cannot be empty.");
+        return;
+    }
+
+    fetch(`/api/posts/${postId}/comment`, {
+        method: 'POST',
+        body: JSON.stringify({ comment: commentContent }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('✅ Comment added:', data);
+        document.getElementById("commentModal").style.display = "none";
+        document.getElementById("modalNewComment").value = '';
+        window.location.href = `/post/${postId}/`;
+    })
+    .catch(error => {
+        console.error('❌ Error adding comment:', error);
+        alert("Error adding comment. Please check the console.");
+    });
 }
 
 export function saveEditedPost(postId) {
@@ -114,7 +124,13 @@ export function saveEditedPost(postId) {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById("postContent").textContent = updatedContent;
+        const postContentElement = document.querySelector(`.post-content[data-post-id="${postId}"] p`);
+        if (postContentElement) {
+            postContentElement.textContent = updatedContent;
+        } else {
+            console.warn(`⚠️ Could not find post content element for Post ID: ${postId}`);
+        }
+
         closeModal("editPostModal");
     })
     .catch(error => {

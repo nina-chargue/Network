@@ -14,11 +14,11 @@ import os
 from dotenv import load_dotenv
 from django.conf import settings
 
-load_dotenv()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -27,21 +27,20 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['network-app.azurewebsites.net', '*']
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    'network',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'network',
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
 ]
 
@@ -134,6 +133,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Added setting for Azure deployment
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 CSRF_TRUSTED_ORIGINS = [
     'https://network-app.azurewebsites.net',
 ]
@@ -142,16 +145,16 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'network/static'),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-]
+# STATICFILES_FINDERS = [
+#     "django.contrib.staticfiles.finders.FileSystemFinder",
+# ]
 
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_VERSION = str(int(os.path.getmtime(os.path.join(settings.STATIC_ROOT, 'js/post.js'))))
+# STATIC_VERSION = str(int(os.path.getmtime(os.path.join(settings.STATIC_ROOT, 'js/post.js'))))
+if os.path.exists(os.path.join(STATIC_ROOT, 'js/post.js')):
+    STATIC_VERSION = str(int(os.path.getmtime(os.path.join(STATIC_ROOT, 'js/post.js'))))
+else:
+    STATIC_VERSION = "1" 

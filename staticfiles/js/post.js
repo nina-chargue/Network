@@ -1,53 +1,73 @@
 import { openCommentModal, openEditPostModal, formatTimestamp, timeAgo, initializeModalListeners } from "./modals.js";
 import { toggleLike, deletePost, saveEditedPost, addComment, createPost, autoResizeTextarea} from "./crud_functions.js";
 
-document.addEventListener("DOMContentLoaded", async function () {
-    const postId = getPostIdFromURL();
-    
-    if (postId) {
-        // Single post page
-        console.log("🔍 Single post detected. Fetching postId:", postId);
-        await displaySinglePost(postId);
-        attachEventListeners(postId);
-    } else {
-        // Get filter type based on active button
-        const filterType = getFilterTypeFromUI();
-        console.log("📰 General posts page detected. Loading posts for:", filterType);
+if (!window.jsAlreadyLoaded) {
+    window.jsAlreadyLoaded = true; // Prevents duplicate execution
 
-        try {
-            const response = await fetch(`/api/posts/filter/${filterType}/`);
-            if (!response.ok) throw new Error("Failed to fetch posts");
+    document.addEventListener("DOMContentLoaded", async function () {
+        console.log("📌 DOMContentLoaded Fired");
 
-            const data = await response.json();
-            if (Array.isArray(data.posts)) {
-                await displayPosts(data.posts);
-                
-                // Create post
-                const composeForm = document.getElementById('compose-form');
-                if (composeForm) {
-                    composeForm.addEventListener('submit', createPost);
-                    console.log("Compose form event listener attached");
-                }
+        const postId = getPostIdFromURL();
 
-            } else {
-                console.error("❌ Error: 'posts' is not an array");
+        if (postId) {
+            await displaySinglePost(postId);
+            attachEventListeners(postId);
+        } else {
+            // Create post
+            const composeForm = document.getElementById('compose-form');
+            if (composeForm) {
+                composeForm.addEventListener('submit', createPost);
             }
-        } catch (error) {
-            console.error("❌ Fetch error:", error);
+            
+            // Comment Form
+            const commentForm = document.getElementById("modal-comment-form");
+            if (commentForm) {
+                commentForm.addEventListener("submit", (event) => {
+                    event.preventDefault();
+                    addComment(postId);
+                });
+            }
+
+            // Delete Post Button
+            const deletePostButton = document.getElementById("deletePostButton");
+            if (deletePostButton) {
+                deletePostButton.addEventListener("click", function() {
+                    const postId = this.dataset.postId; 
+                    if (postId && confirm("Are you sure you want to delete this post?")) {
+                        deletePost(postId);
+                    }
+                });
+            }
+
+            // Save edited post
+            const saveEditButton = document.getElementById("saveEditPostButton");
+            if (saveEditButton) {
+                saveEditButton.addEventListener("click", function() {
+                    const postId = this.dataset.postId;
+                    if (postId) {
+                        saveEditedPost(postId);
+                    }
+                });
+            }
+
+            // Autorresize textareas
+            if (typeof autoResizeTextarea === "function") {
+                autoResizeTextarea();
+            } else {
+                console.warn("autoResizeTextarea function is not defined.");
+            }
         }
-    }
 
-    // Initialize modals globally
-    initializeModalListeners();
-});
+        initializeModalListeners();
+    });
+}
 
-// 🔹 Function to Extract Post ID from URL
 function getPostIdFromURL() {
     const pathSegments = window.location.pathname.split("/").filter(segment => segment);
     return pathSegments.length >= 2 && pathSegments[0] === "post" ? parseInt(pathSegments[1], 10) : null;
 }
 
-function getFilterTypeFromUI() {
+export function getFilterTypeFromUI() {
     const forYouButton = document.getElementById("filterForYou");
     const followingButton = document.getElementById("filterFollowing");
 
@@ -62,7 +82,7 @@ function getFilterTypeFromUI() {
 
 let currentPage = 1;
 const postsPerPage = 10;
-let allPosts = []; // Store all fetched posts globally
+let allPosts = [];
 
 export function load_posts(filterType) {
     const endpoint = `/api/posts/filter/${filterType}/`;
@@ -77,8 +97,8 @@ export function load_posts(filterType) {
         .then(data => {
             console.log("API response:", data);
             if (Array.isArray(data.posts)) {
-                allPosts = data.posts; // Store all posts globally
-                currentPage = 1; // Reset to first page
+                allPosts = data.posts;
+                currentPage = 1;
                 renderPage(currentPage);
             } else {
                 console.error("Error: 'posts' is not an array");
@@ -94,9 +114,9 @@ function renderPage(page) {
     const endIndex = startIndex + postsPerPage;
     const postsToDisplay = allPosts.slice(startIndex, endIndex);
 
-    displayPosts(postsToDisplay); // ✅ Reuse the existing `displayPosts()`
+    displayPosts(postsToDisplay);
 
-    renderPaginationControls(); // Update navigation buttons
+    renderPaginationControls();
 }
 
 function renderPaginationControls() {
@@ -110,8 +130,8 @@ function renderPaginationControls() {
 
     if (currentPage > 1) {
         const prevButton = document.createElement("button");
-        prevButton.textContent = "<<Previous";
-        prevButton.className = "pagination-btn";
+        prevButton.textContent = "Previous";
+        prevButton.className = "pagination-btn prev-button";
         prevButton.addEventListener("click", () => {
             currentPage--;
             renderPage(currentPage);
@@ -121,8 +141,8 @@ function renderPaginationControls() {
 
     if (currentPage * postsPerPage < allPosts.length) {
         const nextButton = document.createElement("button");
-        nextButton.textContent = "Next>>";
-        nextButton.className = "pagination-btn";
+        nextButton.textContent = "Next";
+        nextButton.className = "pagination-btn next-button";
         nextButton.addEventListener("click", () => {
             currentPage++;
             renderPage(currentPage);
@@ -131,7 +151,6 @@ function renderPaginationControls() {
     }
 }
 
-// 🔹 Fetch & Display Multiple Post
 async function displayPosts(posts) {
     const postsContainer = document.querySelector(".postsContainer");
 
@@ -231,10 +250,11 @@ async function displayPosts(posts) {
             openCommentModal(post.id);
         });
 
+        // attachEventListeners(post.id);
+
     });
 }
 
-// 🔹 Fetch & Display Single Post
 async function displaySinglePost(postId) {
     try {
         const response = await fetch(`/api/posts/${postId}`);
@@ -246,7 +266,6 @@ async function displaySinglePost(postId) {
     }
 }
 
-// 🔹 Update UI with Post Data
 function updatePostUI(data, postId) {
     updateElement("profilePicture", "src", data.post.profile_picture);
     updateElement("postUsername", "textContent", data.post.username);
@@ -257,7 +276,6 @@ function updatePostUI(data, postId) {
     updateCommentTimestamps();
 }
 
-// 🔹 Function to Update Comment Timestamps Only
 function updateCommentTimestamps() {
     const commentTimestamps = document.querySelectorAll(".comment.timestamp.time-ago");
     commentTimestamps.forEach(element => {
@@ -268,7 +286,6 @@ function updateCommentTimestamps() {
     });
 }
 
-// 🔹 Attach Event Listeners After Data Loads
 function attachEventListeners(postId) {
     // Like Button
     const likeButton = document.getElementById(`likeButton-${postId}`);
@@ -301,7 +318,6 @@ function attachEventListeners(postId) {
             event.preventDefault();
             addComment(postId);
         });
-        console.log(`✅ Comment form listener attached for post ID: ${postId}`);
     } else {
         console.warn(`⚠️ Comment form not found for post ID: ${postId}`);
     }
@@ -336,7 +352,6 @@ function attachEventListeners(postId) {
     }
 }
 
-// 🔹 Utility Functions
 function updateElement(id, prop, value) {
     const element = document.getElementById(id);
     if (element) {

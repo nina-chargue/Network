@@ -212,20 +212,20 @@ a:hover, a:active {
 
     .confirmation-colored-button {
         background-color: rgb(255, 32, 78, 1);
-    color: #E7E9EA;
-    font-weight: bold;
-    border: none;
-    border-radius: 25px;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 5px 0 0 auto;
-    display: flex;
-    height: fit-content;
-    width: fit-content;
-    position: absolute;
-    bottom: 10px; 
-    left: 10px; 
+        color: #E7E9EA;
+        font-weight: bold;
+        border: none;
+        border-radius: 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 5px 0 0 auto;
+        display: flex;
+        height: fit-content;
+        width: fit-content;
+        position: absolute;
+        bottom: 10px; 
+        left: 10px; 
     }
 
     .confirmation-colored-button:hover, .confirmation-colored-button:active, .confirmation-colored-button:focus {
@@ -235,18 +235,22 @@ a:hover, a:active {
 }
 
 .pagination-btn {
-    background-color: #007bff;
-    color: white;
+    background-color: transparent;
+    color: rgb(255, 32, 78, 1);
     border: none;
-    padding: 10px 20px;
-    margin: 10px;
+    margin: 10px 0;
     cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
+    font-size: 18px;
 }
 
 .pagination-btn:hover {
-    background-color: #0056b3;
+    color: rgb(255, 32, 78, 1);
+    background-color: rgb(247, 59, 96, 0.2);
+    border-radius: 40%;
+}
+
+.next-button {
+    float: right;
 }
 
 

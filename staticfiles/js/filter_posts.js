@@ -1,7 +1,6 @@
-import {load_posts} from './index.js';
+import { load_posts, getFilterTypeFromUI } from './post.js';
 
 document.addEventListener("DOMContentLoaded", function () {
-
     const textarea = document.querySelector('textarea');
     if (textarea) {
         textarea.addEventListener('input', function() {
@@ -23,12 +22,15 @@ document.addEventListener("DOMContentLoaded", function () {
         load_posts("following");
     });
 
-    load_posts("foryou");
-    setActiveFilter(filterForYouButton, filterFollowingButton);
+    // ✅ Only call `load_posts("foryou")` if it hasn't already been loaded
+    if (!window.postsAlreadyLoaded) {
+        window.postsAlreadyLoaded = true;
+        load_posts("foryou");
+        setActiveFilter(filterForYouButton, filterFollowingButton);
+    }
 
     function setActiveFilter(activeButton, inactiveButton) {
         activeButton.classList.add("active");
         inactiveButton.classList.remove("active");
     }
-
 });

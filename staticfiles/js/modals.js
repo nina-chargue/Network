@@ -1,6 +1,5 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'); 
 
-// 🔹 Function to Open Comment Modal
 export function openCommentModal(postId) {
     const modal = document.getElementById("commentModal");
     if (!modal) {
@@ -9,7 +8,14 @@ export function openCommentModal(postId) {
     }
 
     modal.style.display = "block";
-    document.getElementById("modalPostId").value = postId;
+
+    const modalPostIdInput = document.getElementById("modalPostId");
+    if (modalPostIdInput) {
+        modalPostIdInput.value = postId;
+    } else {
+        console.error("❌ Error: modalPostId input not found.");
+        return;
+    }
 
     fetch(`/api/posts/${postId}`)
     .then(response => response.json())
@@ -27,7 +33,6 @@ export function openCommentModal(postId) {
     });
 }
 
-// 🔹 Function to Open Edit Post Modal
 export function openEditPostModal(postId) {
     const modal = document.getElementById("editPostModal");
     if (!modal) {
@@ -40,10 +45,8 @@ export function openEditPostModal(postId) {
     fetch(`/api/posts/${postId}`)
     .then(response => response.json())
     .then(data => {
-        console.log("✅ Edit Post Data:", data);
-
         document.getElementById("editPostTextarea").value = data.post.post_content;
-        document.getElementById("saveEditPostButton").dataset.postId = postId; 
+        document.getElementById("saveEditPostButton").dataset.postId = postId;
         document.getElementById("deletePostButton").dataset.postId = postId;
     })
     .catch(error => {
@@ -51,7 +54,6 @@ export function openEditPostModal(postId) {
     });
 }
 
-// 🔹 Function to Close Modal
 export function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -61,7 +63,6 @@ export function closeModal(modalId) {
     }
 }
 
-// 🔹 Function to Handle Relative Time Formatting
 export function timeAgo(dateString) {
     if (!dateString) {
         return "Invalid date";
@@ -91,7 +92,6 @@ export function timeAgo(dateString) {
     }
 }
 
-// 🔹 Function to Format Date Properly
 export function formatTimestamp(dateString) {
     if (!dateString) {
         return "Invalid date";
@@ -115,9 +115,8 @@ export function formatTimestamp(dateString) {
     return `${formattedHours}:${minutes} ${ampm} · ${month} ${day}, ${year}`;
 }
 
-// 🔹 Function to Initialize Modal Listeners
 export function initializeModalListeners() {
-    // ✅ Close modals when clicking on close buttons
+    // Close modals when clicking on close buttons
     const closeModalButtons = document.querySelectorAll("[data-modal-target]");
     closeModalButtons.forEach(button => {
         button.addEventListener("click", function () {
