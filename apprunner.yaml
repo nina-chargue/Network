@@ -3,7 +3,8 @@ runtime: python311
 build:
   commands:
     build:
-      - pip install -r requirements.txt
+      - python -m pip install -r requirements.txt
+      - python manage.py collectstatic --noinput
 run:
   command: sh startup.sh
   network:
