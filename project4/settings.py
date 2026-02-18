@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['network-app.azurewebsites.net', '*']
+ALLOWED_HOSTS = ['network-app.azurewebsites.net', 'https://ypp2mjacse.us-east-2.awsapprunner.com','*']
 
 CSRF_COOKIE_SECURE = True
 

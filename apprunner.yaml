@@ -8,6 +8,6 @@ run:
   pre-run:
     - pip3 install -r requirements.txt
     - python3 manage.py collectstatic --noinput
-  command: gunicorn project4.wsgi:application --bind 0.0.0.0:$PORT
+  command: gunicorn project4.wsgi:application --bind 0.0.0.0:8000
   network:
     port: 8000
