@@ -1,0 +1,1 @@
+python manage.py collecstatic && gunicorn --workers 2 project4.wsgi
